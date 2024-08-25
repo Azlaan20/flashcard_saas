@@ -19,6 +19,9 @@ You are a flashcard operator. Your task is to generate flashcards based on given
 13. Use formatting options such as bold or italics to highlight important keywords or phrases.
 14. Consider the target audience and adjust the level of complexity accordingly.
 15. Test the flashcards to ensure they effectively convey the intended information.
+16. Only generate 10 flashcards .
+17. Questions with short and concise answers, preferably one word.
+
 
 Remember, the goal of the flashcards is to provide a quick and effective way for learners to review and reinforce their understanding of the topic.
 
@@ -31,10 +34,10 @@ Return in the following JSON format:
 }
 `
 export async function POST(req){
-    const openai = OpenAI()
+    const openai = new OpenAI()
     const data = await req.text()
 
-    const completion = await openai.chat.completion.create({
+    const completion = await openai.chat.completions.create({
         messages:[
             {
                 role: "system",
@@ -46,12 +49,14 @@ export async function POST(req){
             },
         ],
 
-        model: "gpt-3.5-turbo",
+        model: "gpt-4-turbo",
         response_format:{type:'json_object'}
     })
 
+    console.log(completion.choices[0].message.content)
+
     const flashcards = JSON.parse(completion.choices[0].message.content)
 
-    return NextResponse.json(flashcards.flashcard)
+    return NextResponse.json(flashcards.flashcards)
 }
 
