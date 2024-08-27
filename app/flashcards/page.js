@@ -43,16 +43,14 @@ export default function Flashcard(){
         }}>
             {flashcards.map((flashcard,index)=>(
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card>
-                    <CardActionArea onClick={()=> {
-                        handleCardClick(flashcard.name)
-                    }}>
+                <Card sx={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+                    <CardActionArea onClick={() => handleCardClick(flashcard.name)}>
                         <CardContent>
-                            <Typography variant='h6'>{flashcard.name}</Typography>
+                        <Typography variant='h6'>{flashcard.name}</Typography>
                         </CardContent>
                     </CardActionArea>
                 </Card>
-                </Grid>
+        </Grid>
             ))}
         </Grid>
     </Container>)
