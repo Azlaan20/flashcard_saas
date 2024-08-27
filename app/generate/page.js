@@ -1,5 +1,6 @@
 'use client'
-import { doc, writeBatch } from 'firebase/firestore';
+import { doc, writeBatch, setDoc, getDoc, collection} from 'firebase/firestore';
+import {db} from '@/firebase';
 import {useUser} from '@clerk/nextjs';
 import {useRouter} from 'next/navigation'
 import { useState } from 'react'; 
@@ -19,7 +20,8 @@ export default function Generate(){
             method: 'POST',
             body: text,
 
-        }).then((res)=>res.json())
+        })
+        .then((res)=>res.json())
         .then((data) => setFlashcards(data))
     }
 
@@ -31,10 +33,10 @@ export default function Generate(){
     }
 
     const handleOpen = () => {
-        setOpenI(true)
+        setOpen(true)
     }
     const handleClose = () => {
-        setOpenI(false)
+        setOpen(false)
     }
     const saveFlashcards = async () => {
         if (!name){
