@@ -2,7 +2,6 @@
 import {useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {getStripe} from '@/utils/get-stripe';
-import { useSearchParams } from 'next/navigation';
 import { CircularProgress, Typography } from '@mui/material';
 
 const ResultPage = ()=>{
