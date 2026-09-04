@@ -1,7 +1,7 @@
 'use client';
 import Image from "next/image";
 import getStripe from "@/utils/get-stripe";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Show, UserButton } from "@clerk/nextjs";
 import { Toolbar, Container, AppBar, Typography, Button, Box, Grid } from "@mui/material";
 import Head from "next/head";
 import { useRouter } from 'next/navigation';
@@ -48,13 +48,13 @@ export default function Home() {
       <AppBar position='static'>
         <Toolbar>
           <Typography variant='h6' style={{ flexGrow: 1, fontWeight: 'bold' }}>Flashcard SaaS</Typography>
-          <SignedOut>
+          <Show when="signed-out">
             <Button color='inherit' href='/sign-in'>Login</Button>
             <Button color='inherit' href='/sign-up'>Sign Up</Button>
-          </SignedOut>
-          <SignedIn>
+          </Show>
+          <Show when="signed-in">
             <UserButton />
-          </SignedIn>
+          </Show>
         </Toolbar>
       </AppBar>
 
