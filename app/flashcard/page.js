@@ -1,13 +1,13 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Container, Box, Typography, Card, CardActionArea, CardContent, Grid } from '@mui/material';
 import { collection, doc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useSearchParams } from 'next/navigation';
 
-export default function Flashcard() {
+function FlashcardContent() {
     const { isLoaded, isSignedIn, user } = useUser();
     const [flashcards, setFlashcards] = useState([]);
     const [flipped, setFlipped] = useState([]);
@@ -21,12 +21,12 @@ export default function Flashcard() {
 
             const colRef = collection(doc(collection(db, 'users'), user.id), search);
             const docSnap = await getDocs(colRef);
-            const flashcards = [];
+            const loadedFlashcards = [];
 
-            docSnap.forEach((doc) => {
-                flashcards.push({ id: doc.id, ...doc.data() });
+            docSnap.forEach((snapshot) => {
+                loadedFlashcards.push({ id: snapshot.id, ...snapshot.data() });
             });
-            setFlashcards(flashcards);
+            setFlashcards(loadedFlashcards);
         }
         getFlashcard();
     }, [user, search]);
@@ -39,14 +39,14 @@ export default function Flashcard() {
     };
 
     if (!isLoaded || !isSignedIn) {
-        return <></>;
+        return null;
     }
 
     return (
         <Container maxWidth="lg" sx={{ my: 4 }}>
             <Grid container spacing={4}>
                 {flashcards.map((flashcard, index) => (
-                    <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Grid item xs={12} sm={6} md={4} key={flashcard.id || index}>
                         <Card
                             sx={{
                                 boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
@@ -107,5 +107,13 @@ export default function Flashcard() {
                 ))}
             </Grid>
         </Container>
+    );
+}
+
+export default function Flashcard() {
+    return (
+        <Suspense fallback={null}>
+            <FlashcardContent />
+        </Suspense>
     );
 }
