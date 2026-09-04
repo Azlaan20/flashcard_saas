@@ -1,11 +1,10 @@
-'use client'
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import {getStripe} from '@/utils/get-stripe';
+'use client';
+
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CircularProgress, Typography, Container, Box } from '@mui/material';
 
-const ResultPage = () => {
-    const router = useRouter();
+function ResultContent() {
     const searchParams = useSearchParams();
     const session_id = searchParams.get('session_id');
 
@@ -15,7 +14,11 @@ const ResultPage = () => {
 
     useEffect(() => {
         const fetchCheckoutSession = async () => {
-            if (!session_id) return;
+            if (!session_id) {
+                setError('Missing checkout session.');
+                setLoading(false);
+                return;
+            }
 
             try {
                 const res = await fetch(`/api/checkout_session?session_id=${session_id}`);
@@ -23,10 +26,10 @@ const ResultPage = () => {
                 if (res.ok) {
                     setSession(sessionData);
                 } else {
-                    setError(sessionData.error || "An error occurred");
+                    setError(sessionData.error || 'An error occurred');
                 }
-            } catch (err) {
-                setError("An error occurred");
+            } catch {
+                setError('An error occurred');
             } finally {
                 setLoading(false);
             }
@@ -37,7 +40,7 @@ const ResultPage = () => {
 
     if (loading) {
         return (
-            <Container maxWidth='100vw' sx={{ textAlign: 'center', mt: 4 }}>
+            <Container maxWidth='lg' sx={{ textAlign: 'center', mt: 4 }}>
                 <CircularProgress />
                 <Typography variant='h6'>Loading...</Typography>
             </Container>
@@ -46,15 +49,15 @@ const ResultPage = () => {
 
     if (error) {
         return (
-            <Container maxWidth='100vw' sx={{ textAlign: 'center', mt: 4 }}>
+            <Container maxWidth='lg' sx={{ textAlign: 'center', mt: 4 }}>
                 <Typography variant='h6'>{error}</Typography>
             </Container>
         );
     }
 
     return (
-        <Container maxWidth='100vw' sx={{ textAlign: 'center', mt: 4 }}>
-            {session.payment_status === 'paid' ? (
+        <Container maxWidth='lg' sx={{ textAlign: 'center', mt: 4 }}>
+            {session?.payment_status === 'paid' ? (
                 <>
                     <Typography variant='h4'>Thank you for purchasing.</Typography>
                     <Box sx={{ mt: 2 }}>
@@ -76,6 +79,12 @@ const ResultPage = () => {
             )}
         </Container>
     );
-};
+}
 
-export default ResultPage;
+export default function ResultPage() {
+    return (
+        <Suspense fallback={<CircularProgress />}>
+            <ResultContent />
+        </Suspense>
+    );
+}
